@@ -34,7 +34,7 @@ const Todopage = () => {
       const response =await api.post('/todo/api/create',{
         title
       })
-      setTodos(prev => [...prev],response.data)
+      setTodos(prev => [...prev,response.data])
       setTodo('')
     } catch (error) {
       console.error('Error creating todo:', error)
@@ -50,9 +50,9 @@ const Todopage = () => {
       await api.put('/todo/api/updateTodo',updatedTodo)
 
       setTodos(prev=>
-        prev.map(item=>{
+        prev.map(item=>
           item.id == todo.id ? updatedTodo : item
-        })
+        )
       )
     }
     catch(error){
