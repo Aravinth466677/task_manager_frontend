@@ -14,15 +14,12 @@ const Todopage = () => {
   const loadTodo = async () => {
     const response = await api.get('/todo/api/todos')
     setTodos(response.data)
-
-    console.log(todos);
-    
   }
 
   const deleteTodo = async (id) => {
     try {
       await api.delete(`/todo/api/deleteTodoById/${id}`)
-      loadTodo() // Refresh the todo list after deletion
+      setTodos(prev => prev.filter(todo => todo.id !== id))
     } catch (error) {
       console.error('Error deleting todo:', error)
     }
@@ -34,10 +31,10 @@ const Todopage = () => {
     if (!title) return
 
     try{
-      await api.post('/todo/api/create',{
+      const response =await api.post('/todo/api/create',{
         title
       })
-      loadTodo()
+      setTodos(prev => [...prev],response.data)
       setTodo('')
     } catch (error) {
       console.error('Error creating todo:', error)
@@ -46,11 +43,17 @@ const Todopage = () => {
 
   const toggleTodo = async(todo)=>{
     try{
-      await api.put('/todo/api/updateTodo',{
+      const updatedTodo = {
         ...todo,
         completed: !todo.completed
-      })
-      loadTodo()
+      }
+      await api.put('/todo/api/updateTodo',updatedTodo)
+
+      setTodos(prev=>
+        prev.map(item=>{
+          item.id == todo.id ? updatedTodo : item
+        })
+      )
     }
     catch(error){
       console.error('Error updating todo:', error)
